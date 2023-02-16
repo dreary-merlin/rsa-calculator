@@ -1,10 +1,5 @@
 #include "rsa.h"
 
-/*struct rsa::Key{
-    std::uint64_t e;
-    std::uint64_t n;
-};*/
-
 rsa::rsa(std::uint64_t _e, std::uint64_t _n)
 {
     _key.e=_e;
@@ -159,45 +154,7 @@ std::int64_t rsa::inverse(std::uint64_t a, std::uint64_t b) { // мультип�
     return -1;
 }
 
-std::vector<std::uint64_t> rsa::resize(const std::vector<std::uint64_t> &data, std::uint8_t in_size, std::uint8_t out_size) {
-    std::vector<std::uint64_t> res;
-    std::uint8_t done = 0;
-    std::uint64_t cur = 0;
-    for (std::uint64_t byte : data) {
-        for (std::uint8_t i = 0; i < in_size; i++) {
-            cur = (cur << 1U) + ((byte & (1U << static_cast<std::uint64_t>(in_size - 1 - i))) != 0);
-            done++;
-            if (done == out_size) {
-                done = 0;
-                res.push_back(cur);
-                cur = 0;
-            }
-        }
-    }
-    //Дополнение нулями
-    if (done != 0) {
-        res.push_back(cur << (static_cast<std::uint64_t>(out_size - done)));
-    }
-    return res;
-}
-
-//(Де)шифрование
-std::vector<std::uint8_t> rsa::process_bytes(const std::vector<std::uint8_t> &data, Key k, bool encrypt) {
-    std::vector<std::uint64_t> data_64(data.size());
-    for (std::uint32_t i = 0; i < data.size(); i++)
-        data_64[i] = static_cast<std::uint64_t>(data[i]);
-    std::vector<std::uint64_t> resized_data = resize(data_64, 8, static_cast<uint8_t>(ceil(log(k.n) / log(2))) - encrypt); //Если мы шифруем, то размер блока K - 1, иначе K
-    std::vector<std::uint64_t> encrypted_data(resized_data.size());
-    for (std::uint32_t i = 0; i < resized_data.size(); i++)
-        encrypted_data[i] = powm(resized_data[i], k.e, k.n);
-    std::vector<std::uint64_t> result_64 = resize(encrypted_data, static_cast<uint8_t>(ceil(log(k.n) / log(2))) - !encrypt, 8);
-    std::vector<std::uint8_t> result(result_64.size());
-    for (std::uint32_t i = 0; i < result_64.size(); i++)
-        result[i] = static_cast<uint8_t>(result_64[i]);
-    return result;
-}
-
-std::string rsa::blabla(const std::string str, Key k, bool encrypt) {
+std::string rsa::crypt(const std::string str, Key k, bool encrypt) {
     std::uint16_t size = static_cast<uint16_t>(ceil(log10(k.n + 0.5)) - encrypt); // k - количество цифр в блоке
     std::vector<std::uint64_t> vec;
     size_t i = 0;
