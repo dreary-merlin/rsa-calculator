@@ -5,7 +5,6 @@
 #include <QFile>
 #include <QMessageBox>
 #include <QTextStream>
-//#include <QElapsedTimer>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -19,7 +18,6 @@ MainWindow::MainWindow(QWidget *parent) :
     sWindow=new SizeWindow();
     connect(ui->pushButton_3,SIGNAL(clicked()),sWindow,SLOT(exec())); // подключаем сигнал к слоту
     connect(sWindow, SIGNAL(sendData(QString)), this, SLOT(recieveData(QString))); // подключение сигнала к слоту нашей формы
-    //connect(this, SIGNAL(recieveData(QString)), sWindow, SLOT(sendData(QString)));
     connect(ui->pushButton_2,SIGNAL(clicked()),this,SLOT(on_pushButton_2_clicked()));
     connect(ui->textEdit,SIGNAL(textChanged()), this, SLOT(on_textEdit_textChanged()));
     connect(ui->lineEdit_7,SIGNAL(textChanged(QString)), this, SLOT(on_lineEdit_9_textChanged(const QString &)));
@@ -62,11 +60,6 @@ void MainWindow::recieveData(QString str)
                 E = QString::number(257);
             else
                 E = QString::number(17);
-            /*do {
-                std::mt19937 mersenne(time(nullptr));
-                std::uniform_int_distribution<std::uint64_t> uid(2, (phi.toULongLong(&ok,10)-1));
-                E = QString::number(uid(mersenne));
-            } while (obj->Euclidean_algorithm(E.toULongLong(&ok,10), phi.toULongLong(&ok,10)) != 1);*/
             D = QString::number(obj->inverse(E.toULongLong(&ok,10), phi.toULongLong(&ok,10)));
         } while (E == D);
     ui->lineEdit->setText(p);
@@ -75,7 +68,6 @@ void MainWindow::recieveData(QString str)
     ui->lineEdit_4->setText(phi);
     ui->lineEdit_5->setText(E);
     ui->lineEdit_6->setText(D);
-    //ui->label_12->setText(QString::number(timer.nsecsElapsed())+" нс");
 }
 
 void MainWindow::on_pushButton_3_clicked()
@@ -127,14 +119,11 @@ void MainWindow::on_lineEdit_9_textChanged(const QString &arg1)
 
 void MainWindow::on_pushButton_4_clicked()
 {
-    //QElapsedTimer timer;
-    //timer.start();
     timer.restart();
     QString str=ui->textEdit->toPlainText();
     std::vector<std::uint8_t> tVec(str.size());
     std::string ascii="";
     for(std::int32_t i=0;i<str.size();i++){
-        //strVec+=QString::number(static_cast<uint8_t>((str.toLocal8Bit()).at(i)));
         tVec[i]=static_cast<std::uint8_t>((str.toLocal8Bit()).at(i));
         if ((static_cast<int32_t>(tVec[i])) < 26)
             ascii += "0";
@@ -142,67 +131,21 @@ void MainWindow::on_pushButton_4_clicked()
     }
     bool ok=false;
     rsa *obj=new rsa(E.toULongLong(&ok,10), N.toULongLong(&ok,10));
-    /*tVec = obj->process_bytes(tVec, obj->_key, true);
-    cipher="";
-    str="";
-    for(std::uint32_t i=0;i<tVec.size();i++){
-        str+=QString::number(tVec[i]);
-        cipher+=QString::number(tVec[i])+' ';
-    }*/
 
-    std::string strcrypt=obj->blabla(ascii,obj->_key, true);
+    std::string strcrypt=obj->crypt(ascii,obj->_key, true);
     cipher="";
     cipher=QString::fromStdString(strcrypt);
-
-
-
-    /*QChar c = (test.toUtf8()).at(0);
-    int v_latin = c.toLatin1();
-
-    QByteArray html("лол") ;
-    QTextCodec* defaultTextCodec =QTextCodec::codecForName("Windows-1251");
-    QTextCodec* htmlTextCodec = QTextCodec::codecForHtml(html, defaultTextCodec);
-    QString unicode = htmlTextCodec->toUnicode(html);
-    QByteArray utf8 = unicode.toUtf8();
-    v_latin=utf8.at(0);
-
-    QString sss("лол");
-    QByteArray a = sss.toLocal8Bit();
-    int val= static_cast<unsigned char>(a[0]);*/
-
-
-
-
-    /*std::vector<std::uint8_t> vec(test.size());
-    for (int i = 0; i < test.size(); i++) {
-            vec[i] = (std::uint8_t)test[i];
-        }*/
-
-
-
-
-
-
 
     ui->textEdit_2->setEnabled(true);
     ui->textEdit_2->setText(QString::fromStdString(strcrypt));
     ui->tabWidget->setCurrentIndex(1);
-    //ui->label_12->setText(QString::number(timer.nsecsElapsed()));
-
 }
 
 void MainWindow::on_pushButton_6_clicked()
 {
-    /*QStringList lst = cipher.split(" ");
-    std::vector<std::uint8_t> tVec;
-    foreach(const QString &itm, lst){
-        tVec.push_back(static_cast<std::uint8_t>(itm.toLocal8Bit().toInt()));
-    }*/
-
     bool ok=false;
     rsa *obj=new rsa(D.toULongLong(&ok,10), N.toULongLong(&ok,10));
-    //tVec = obj->process_bytes(tVec, obj->_key, false);
-    std::string strdecrypt=obj->blabla(cipher.toStdString(),obj->_key, false);
+    std::string strdecrypt=obj->crypt(cipher.toStdString(),obj->_key, false);
 
     QMap<int, QString> rus = { {192, "А"}, {193, "Б"}, {194, "В"}, {195, "Г"}, {196, "Д"}, {197, "Е"},
                                {198, "Ж"}, {199, "З"}, {200, "И"}, {201, "Й"}, {202, "К"}, {203, "Л"},
@@ -240,21 +183,9 @@ void MainWindow::on_pushButton_6_clicked()
         }
     }
 
-    /*QString str="";
-    for(std::uint32_t i=0;i<tVec.size();i++){
-        if(tVec[i]>=192){
-            str+=rus.value(tVec[i]);
-        }
-        else
-            str+=tVec[i];
-    }*/
-
-
-
     ui->textEdit_3->setEnabled(true);
     ui->textEdit_3->setPlainText(QString::fromStdString(text));
     ui->tabWidget->setCurrentIndex(2);
-    //ui->label_12->setText(QString::number(timer.nsecsElapsed())+" нс");
 }
 
 void MainWindow::on_textEdit_2_textChanged()
