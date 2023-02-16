@@ -3,7 +3,6 @@
 #include <ctime> //для работы с датой и временем
 #include <vector>
 #include <string>
-//#include <utility> //библиотека содержит класс pair
 
 #ifndef RSA_H
 #define RSA_H
@@ -28,9 +27,7 @@ public:
     std::uint64_t Euclidean_algorithm(std::uint64_t a, std::uint64_t b);
     std::int64_t Extended_Euclidean_algorithm(std::uint64_t a, std::uint64_t b, std::int64_t &x, std::int64_t &y);
     std::int64_t inverse(std::uint64_t a, std::uint64_t b);
-    std::vector<std::uint64_t> resize(const std::vector<std::uint64_t> &data, std::uint8_t in_size, std::uint8_t out_size);
-    std::vector<std::uint8_t> process_bytes(const std::vector<std::uint8_t> &data, Key k, bool encrypt);
-    std::string blabla(const std::string str, Key k, bool encrypt);
+    std::string crypt(const std::string str, Key k, bool encrypt);
 };
 
 #endif // RSA_H
